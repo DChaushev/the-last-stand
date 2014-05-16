@@ -1,7 +1,7 @@
 the-last-stand
 ==============
 
-Game that I'm making as a project in Python course.
+Game that I'm making as a project for a Python course.
 ==============
 
 Играта представява 2D stand-alone shooter.
