@@ -27,9 +27,13 @@ class Hero:
 		self.ani_speed_init = 10
 		self.ani_speed = self.ani_speed_init
 		self.ani = glob.glob("soldier sprite/run/tmp-*.gif")
+		self.ani_dead = glob.glob("soldier sprite/die/tmp-*.gif")
 		self.ani.sort()
+		self.ani_dead.sort()
+		self.ani_pos_dead = 0
 		self.ani_pos = 0;
 		self.ani_max = len(self.ani) - 1
+		self.ani_max_dead = len(self.ani_dead) - 1
 		self.update([])
 
 	def update(self, zombies):
@@ -62,6 +66,16 @@ class Hero:
 			else:
 				self.ani_pos += 1
 
+		elif self.isAlive == False:
+			if self.facing == RIGHT:
+				self.surface = pygame.image.load(self.ani_dead[self.ani_pos_dead])
+			else:
+				self.surface = pygame.transform.flip(pygame.image.load(self.ani_dead[self.ani_pos_dead]), True, False)
+			if self.ani_pos_dead == self.ani_max_dead:
+				pass
+			else:
+				self.ani_pos_dead += 1
+
 		else:
 			self.surface = pygame.image.load('soldier sprite/soldier_dead.gif')
 
@@ -75,14 +89,12 @@ class Hero:
 				if zombie.x < self.x:
 					if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
 						zombie.isAlive = False
-						zombie.surface = pygame.image.load('zombie sprite/zombie_dead.gif')
 						return
 			if self.facing == RIGHT:
 				self.surface = pygame.transform.flip(pygame.image.load('soldier sprite/shoot_left.png'), True, False)
 				if zombie.x > self.x:
 					if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
 						zombie.isAlive = False
-						zombie.surface = pygame.image.load('zombie sprite/zombie_dead.gif')
 						return
 
 class Zombie:
@@ -104,7 +116,7 @@ class Zombie:
 		self.ani_max_dead = len(self.ani_dead) - 1
 
 	def update(self, player):
-		
+
 		if(self.isAlive):
 			if self.x < player.x:
 				self.x += ZOMBIESPEED;
@@ -121,7 +133,6 @@ class Zombie:
 			if self.ani_pos == self.ani_max:
 				self.ani_pos = 0
 			else:
-		
 				self.ani_pos += 1
 		else:
 			if self.x < player.x:
@@ -143,6 +154,9 @@ def main():
 	moveUp = False
 	moveDown = False
 	fire = False
+	zombie_number = 10
+	zombies_left = False
+	wave = 1
 
 	pygame.init()
 	FPSCLOCK = pygame.time.Clock()
@@ -173,14 +187,10 @@ def main():
 
 	player = Hero()
 	zombies = []
-	for i in range(10):
+	for i in range(zombie_number):
 		zombie = Zombie()
-		zombie.surface = R_ZOMBIE_WALK
 		zombies.append(zombie)
 
-	for i in zombies:
-		print("({0}, {1})".format(i.x, i.y))
-	
 
 	while True:
 
@@ -222,14 +232,23 @@ def main():
 				elif event.key == K_SPACE:
 					fire = False
 
+		
+		zombiesLeft = False
+		for zombie in zombies:
+			zombie.update(player)
+			if zombie.isAlive:
+				zombiesLeft = True
+			
+
+		# if zombiesLeft == False:
+		# 	del zombies[:]
+
+		# 	zombie_number += 2
+		# 	for i in range(zombie_number):
+		# 		zombies.append(Zombie())
 
 
 		player.update(zombies)
-
-
-		
-		for zombie in zombies:
-			zombie.update(player)
 
 		pygame.display.update()
 		FPSCLOCK.tick(FPS)
