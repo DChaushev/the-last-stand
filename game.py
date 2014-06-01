@@ -84,23 +84,51 @@ class Hero:
 
 	def fireWeapon(self, zombies):
 		for zombie in zombies:
-			if self.facing == LEFT:
-				self.surface = pygame.image.load('soldier sprite/shoot_left.png')
-				if zombie.x < self.x:
-					if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
-						zombie.isAlive = False
-						return
-			if self.facing == RIGHT:
-				self.surface = pygame.transform.flip(pygame.image.load('soldier sprite/shoot_left.png'), True, False)
-				if zombie.x > self.x:
-					if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
-						zombie.isAlive = False
-						return
+			if type(zombie) == type(Zombie()):
+				if self.facing == LEFT:
+					self.surface = pygame.image.load('soldier sprite/shoot_left.png')
+					if zombie.x < self.x:
+						if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
+							zombie.isAlive = False
+							return
+				if self.facing == RIGHT:
+					self.surface = pygame.transform.flip(pygame.image.load('soldier sprite/shoot_left.png'), True, False)
+					if zombie.x > self.x and zombie.x:
+						if zombie.y <= self.y + 64/2 and zombie.y >= self.y:
+							zombie.health -= 5
+							print(zombie.health)
+							if zombie.health <= 0:
+								zombie.isAlive = False
+							return
+
+			elif type(zombie == type(Butcher())):
+				if self.facing == LEFT:
+					self.surface = pygame.image.load('soldier sprite/shoot_left.png')
+					if zombie.x < self.x:
+						if zombie.y <= self.y + int(pygame.Surface.get_height(zombie.surface)) and zombie.y + int(pygame.Surface.get_height(zombie.surface)) >= self.y:
+							zombie.health -= 0.2
+							zombie.surface = pygame.image.load('zombie sprite/Butcher_hit_right.png')
+							print(zombie.health)
+							if zombie.health <= 0:
+								zombie.isAlive = False
+							return
+				if self.facing == RIGHT:
+					self.surface = pygame.transform.flip(pygame.image.load('soldier sprite/shoot_left.png'), True, False)
+					if zombie.x > self.x and zombie.x:
+						if zombie.y <= self.y + int(pygame.Surface.get_height(zombie.surface)) and zombie.y + int(pygame.Surface.get_height(zombie.surface)) >= self.y:
+							zombie.health -= 0.2
+							zombie.surface = pygame.transform.flip(pygame.image.load('zombie sprite/Butcher_hit_right.png'), True, False)
+							print(zombie.health)
+							if zombie.health <= 0:
+								zombie.isAlive = False
+							return
+
+
 
 class Zombie:
 	def __init__(self):
 		self.isAlive = True
-		self.health = 100
+		self.health = 5
 		self.facing = RIGHT
 		self.x = random.choice([100, 1000])
 		self.y = randint(10, 750)
@@ -146,8 +174,49 @@ class Zombie:
 
 		DISPLAYSURF.blit(self.surface, (self.x, self.y))
 
+
+class Butcher:
+	def __init__(self):
+		self.isAlive = True
+		self.health = 100
+		self.speed = 1
+		self.facing = RIGHT
+		self.x = random.choice([-50, 0])
+		self.y = randint(10, 750)
+		self.surface = pygame.image.load('zombie sprite/butcher_right.gif')
+		
+
+	def update(self, player):
+		if self.isAlive:
+			if self.x + int(pygame.Surface.get_width(self.surface)) < player.x:
+				self.x += self.speed
+				self.facing = RIGHT
+			elif self.x > player.x + int(pygame.Surface.get_width(player.surface)):
+				self.x -= self.speed
+				self.facing = LEFT
+			if self.y + int(pygame.Surface.get_height(self.surface)/2) < player.y:
+				self.y += self.speed
+			elif self.y + int(pygame.Surface.get_height(self.surface)/2) > player.y:
+				self.y -= self.speed
+			if self.facing == RIGHT:
+				if self.x + int(pygame.Surface.get_width(self.surface)) == player.x and self.y + int(pygame.Surface.get_height(self.surface)/2) == player.y:
+					player.isAlive = False
+			if self.facing == LEFT:
+				if self.x == player.x + int(pygame.Surface.get_width(player.surface)) and self.y + int(pygame.Surface.get_height(self.surface)/2) == player.y:
+					player.isAlive = False
+
+		if self.facing == RIGHT:
+			self.surface = pygame.image.load('zombie sprite/butcher_right.gif')
+		elif self.facing == LEFT:
+			self.surface = pygame.transform.flip(pygame.image.load('zombie sprite/butcher_right.gif'), True, False)
+
+		DISPLAYSURF.blit(self.surface, (self.x, self.y))
+
+
+
+
 def main():
-	global FPSCLOCK, DISPLAYSURF, BASICFONT, TREEIMAGE, R_TROOPER_IDLE, L_TROOPER_IDLE, R_ZOMBIE_WALK, L_ZOMBIE_WALK, zombies, L_TROOPER_WEAPON, R_TROOPER_WEAPON, moveLeft, moveRight, moveUp, moveDown, fire
+	global BG, FPSCLOCK, DISPLAYSURF, BASICFONT, TREEIMAGE, R_TROOPER_IDLE, L_TROOPER_IDLE, R_ZOMBIE_WALK, L_ZOMBIE_WALK, zombies, L_TROOPER_WEAPON, R_TROOPER_WEAPON, moveLeft, moveRight, moveUp, moveDown, fire
 
 	moveLeft = False
 	moveRight = False
@@ -182,7 +251,7 @@ def main():
 	L_TROOPER_WEAPON = pygame.image.load('soldier sprite/stand_left.png')
 	R_TROOPER_WEAPON = pygame.transform.flip(L_TROOPER_WEAPON, True, False)
 
-
+	BG = pygame.image.load('terrain/19.jpg')
 	##-------------------------------------------------------------------
 
 	player = Hero()
@@ -195,6 +264,7 @@ def main():
 	while True:
 
 		DISPLAYSURF.fill(TERRAINCOLOR)
+		#DISPLAYSURF.blit(BG, (0,0))
 
 		if player.facing == RIGHT:
 			player.surface = R_TROOPER_WEAPON
@@ -240,9 +310,12 @@ def main():
 				zombiesLeft = True
 			
 
-		# if zombiesLeft == False:
+		#if zombiesLeft == False:
+		#	BG = pygame.image.load('terrain/19_open.jpg')
 		# 	del zombies[:]
-
+		#	if wave == 1:
+		#		zombies.append(Butcher())
+		#		wave+=1
 		# 	zombie_number += 2
 		# 	for i in range(zombie_number):
 		# 		zombies.append(Zombie())
