@@ -247,6 +247,8 @@ import Hero
 from Hero import *
 import enumerations
 from enumerations import *
+import Zombie
+from Zombie import *
 
 
 def main():
@@ -268,10 +270,10 @@ def main():
 
 
     player = Hero()
-    # zombies = []
-    # for i in range(zombie_number):
-    #     zombie = Zombie()
-    #     zombies.append(zombie)
+    zombies = []
+    for i in range(10):
+        zombie = Zombie()
+        zombies.append(zombie)
 
 
 
@@ -280,6 +282,8 @@ def main():
 
         DISPLAYSURF.fill(TERRAINCOLOR)
         DISPLAYSURF.blit(player.surface, (player.x, player.y))
+        for z in zombies:
+            DISPLAYSURF.blit(z.surface, (z.x, z.y))
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -332,6 +336,10 @@ def main():
 
 
         player.update()
+
+        for z in zombies:
+            z.update(player.x, player.y)
+
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
