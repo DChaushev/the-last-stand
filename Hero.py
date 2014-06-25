@@ -44,6 +44,7 @@ class Hero:
         self.move_up = False
         self.move_down = False
         self.fire = False
+        self.score = 0
 
     def update(self):
         if self.is_alive:
