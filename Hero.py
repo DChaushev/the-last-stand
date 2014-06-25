@@ -29,6 +29,7 @@ class Hero:
 
     def __init__(self):
         self.is_alive = True
+        self.power = 5
         self.facing = RIGHT
         self.x = int(WINDOW_WIDTH/2)
         self.y = int(WINDOW_HEIGHT/2)

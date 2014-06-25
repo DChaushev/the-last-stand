@@ -251,6 +251,28 @@ import Zombie
 from Zombie import *
 
 
+def fire(player, zombies):
+    if player.facing == RIGHT:
+        zombies = [z for z in zombies if z.x > player.x]
+        for z in zombies:
+            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
+                z.health -= player.power
+                if z.health <= 0:
+                    z.is_alive = False
+                return
+
+    elif player.facing == LEFT:
+        zombies = [z for z in zombies if z.x < player.x]
+        for z in zombies:
+            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
+                z.health -= player.power
+                if z.health <= 0:
+                    z.is_alive = False
+                return
+
+
+
+
 def main():
     global BG, tree_rect, FPSCLOCK, DISPLAYSURF, BASICFONT, TREEIMAGE, R_TROOPER_IDLE, L_TROOPER_IDLE, R_ZOMBIE_WALK, L_ZOMBIE_WALK, zombies, L_TROOPER_WEAPON, R_TROOPER_WEAPON, moveLeft, moveRight, moveUp, moveDown, fire
 
@@ -282,8 +304,11 @@ def main():
 
         DISPLAYSURF.fill(TERRAINCOLOR)
         DISPLAYSURF.blit(player.surface, (player.x, player.y))
+        zombies = [z for z in zombies if z.animation_dead_position < z.animation_dead_max]
         for z in zombies:
             DISPLAYSURF.blit(z.surface, (z.x, z.y))
+            box = pygame.Rect(z.x, z.y, (z.health*z.surface.get_width())/10, -5)
+            pygame.draw.rect(DISPLAYSURF, (255, 0, 0), box, 0)
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -304,6 +329,7 @@ def main():
                     player.move_right = True
                 elif event.key == K_SPACE:
                     player.fire = True
+                    fire(player, zombies)
             elif event.type == KEYUP:
                 if event.key in (K_UP, K_w):
                     player.move_up = False
@@ -338,7 +364,9 @@ def main():
         player.update()
 
         for z in zombies:
-            z.update(player.x, player.y)
+            dead = z.update(player.x, player.y)
+            if dead:
+                player.is_alive = False
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)

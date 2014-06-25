@@ -30,7 +30,7 @@ class Zombie:
 
     def __init__(self):
         self.is_alive = True
-
+        self.health = 15
         yy = randint(-20, 800)
         lx = randint(-300, -50)
         rx = randint(1074, 1324)
@@ -61,10 +61,22 @@ class Zombie:
             else:
                 self.y -= self.speed
 
-        if self.animation_position_run == self.animation_position_max:
-                self.animation_position_run = 0
+            if self.animation_position_run == self.animation_position_max:
+                    self.animation_position_run = 0
+            else:
+                self.animation_position_run += 1
+
         else:
-            self.animation_position_run += 1
+            if self.x < x:
+                self.surface = R_ANIMATION_DEAD[self.animation_dead_position]
+            else:
+                self.surface = L_ANIMATION_DEAD[self.animation_dead_position]
+
+            if self.animation_dead_position == self.animation_dead_max:
+                pass
+            else:
+                self.animation_dead_position += 1
+
 
         if self.x == x and self.y == y:
             return 1
