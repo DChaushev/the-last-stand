@@ -251,9 +251,19 @@ import Zombie
 from Zombie import *
 
 
+def comparator(x, z1, z2):
+    if z1.x - x < z2.x - x:
+        return 1
+    if z1.x - x == z2.x - x:
+        return 0
+    else:
+        return -1
+
+import operator
 def fire(player, zombies):
     if player.facing == RIGHT:
         zombies = [z for z in zombies if z.x > player.x]
+        zombies.sort(key= lambda z: z.x)
         for z in zombies:
             if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
                 z.health -= player.power
@@ -263,6 +273,7 @@ def fire(player, zombies):
 
     elif player.facing == LEFT:
         zombies = [z for z in zombies if z.x < player.x]
+        zombies.sort(key= lambda z: z.x, reverse = True)
         for z in zombies:
             if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
                 z.health -= player.power
@@ -290,10 +301,10 @@ def main():
     DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.display.set_caption('The Last Stand')
 
-
+    zombie_count = 10
     player = Hero()
     zombies = []
-    for i in range(10):
+    for i in range(zombie_count):
         zombie = Zombie()
         zombies.append(zombie)
 
@@ -304,6 +315,13 @@ def main():
 
         DISPLAYSURF.fill(TERRAINCOLOR)
         DISPLAYSURF.blit(player.surface, (player.x, player.y))
+
+        if not zombies:
+            zombie_count += 5
+            for i in range(zombie_count):
+                zombie = Zombie()
+                zombies.append(zombie)
+
         zombies = [z for z in zombies if z.animation_dead_position < z.animation_dead_max]
         for z in zombies:
             DISPLAYSURF.blit(z.surface, (z.x, z.y))
