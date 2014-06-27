@@ -109,7 +109,10 @@ class MenuItem:
         self.x = 0
         self.y = 0 #The menu will edit these
 
+
         self.logo = pygame.image.load('zombie sprite/zombie-logo.png')
+        #self.logo = pygame.image.load('soldier sprite/player_logo.png')
+
 
         self.font = pygame.font.Font(None, 20)
         self.image = self.font.render(self.text, True, self.color)

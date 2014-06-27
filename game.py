@@ -11,63 +11,64 @@ import Zombie
 from Zombie import *
 from menu import *
 
-
 FPS = 30
 TERRAINCOLOR = (10, 127, 2)
 
+""" In the main function we have only the menu """
+def main():
 
-def fire(player, zombies):
-    if player.facing == RIGHT:
-        zombies = [z for z in zombies if z.x > player.x]
-        zombies.sort(key= lambda z: z.x)
-        for z in zombies:
-            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
-                z.health -= player.power
-                if z.health <= 0:
-                    z.is_alive = False
-                    player.score += 5
-                return
+    global FPSCLOCK, DISPLAYSURF
 
-    elif player.facing == LEFT:
-        zombies = [z for z in zombies if z.x < player.x]
-        zombies.sort(key= lambda z: z.x, reverse = True)
-        for z in zombies:
-            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
-                z.health -= player.power
-                if z.health <= 0:
-                    z.is_alive = False
-                    player.score += 5
-                return
+    pygame.init()
+    FPSCLOCK = pygame.time.Clock()
+    DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.display.set_caption('The Last Stand')
 
 
-def gameOver(player):
-    font = pygame.font.Font(None, 40)
-    font1 = pygame.font.Font(None, 30)
-    text = font.render("Game Over", True, (0, 0, 0))
-    text1 = font1.render("score: " + str(player.score), True, (0, 0, 0))
-    text2 = font1.render("press space to continue or esc to go back to menu", True, (0, 0, 0))
-    text_rect = text.get_rect()
-    text_x = DISPLAYSURF.get_width() / 2 - text_rect.width / 2
-    text_y = DISPLAYSURF.get_height() / 2 - text_rect.height / 2
+    menu = RotatingMenu(x=320, y=240, radius=220, arc=pi, defaultAngle=pi/2.0)
+    menu.addItem(MenuItem("New Game"))
+    menu.addItem(MenuItem("High Scores"))
+    menu.addItem(MenuItem("Exit"))
+    menu.selectItem(0)
 
-    while 1:
-        DISPLAYSURF.blit(text, [text_x, text_y])
-        DISPLAYSURF.blit(text1, [text_x, text_y + 50])
-        DISPLAYSURF.blit(text2, [text_x, text_y + 100])
+    while True:
+        show_menu(menu)
 
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    write_score(player.score)
-                    main()
-                elif event.key == K_ESCAPE:
-                    main()
+""" When we start the game, we see rotating menu. It is not mine.
+    I got it from pygame.com and modified it to fit my needs."""
 
-        pygame.display.update()
+def show_menu(menu):
 
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT or event.key == K_a:
+                menu.selectItem(menu.selectedItemNumber + 1)
+            if event.key == pygame.K_RIGHT or event.key == K_d:
+                menu.selectItem(menu.selectedItemNumber - 1)
+            if event.key == pygame.K_KP_ENTER or event.key == K_SPACE:
+                if menu.selectedItemNumber == 2:
+                    pygame.quit()
+                    sys.exit()
+                if menu.selectedItemNumber == 1:
+                    show_scores()
+                elif menu.selectedItemNumber == 0:
+                    start_game()
+
+    menu.update()
+
+    DISPLAYSURF.fill((0,0,0))
+    menu.draw(DISPLAYSURF)
+    pygame.display.flip()
+
+"""
+This function is called when we press New Game.
+We create our character, which is from class Hero and we start with 10 zombies.
+When all the zombies are dead, we increment their number with 5 and spawn them.
+"""
 
 def start_game():
 
@@ -78,6 +79,8 @@ def start_game():
         zombie = Zombie()
         zombies.append(zombie)
 
+    """This is a timer, I use for measuring 1 second. Every second the player is alive,
+        he gets 1 point. For every zombie he kills - 5 points"""
     scoreIncrementTimer = 0
     lastFrameTicks = pygame.time.get_ticks()
 
@@ -101,6 +104,9 @@ def start_game():
                 for i in range(zombie_count):
                     zombie = Zombie()
                     zombies.append(zombie)
+
+            """We get rid of the dead zombies right after their dead animation is over.
+                Over all still 'living' zombies, there is a health bar, which decrements with each hit."""
 
             zombies = [z for z in zombies if z.animation_dead_position < z.animation_dead_max]
             for z in zombies:
@@ -163,6 +169,75 @@ def start_game():
         FPSCLOCK.tick(FPS)
 
 
+"""
+I am very proud of this function.
+When the player fires, depending on the side he is facing, we check only for hit on that side.
+The zombies are sorted by the distance to the player and we are always hitting the closest one.
+
+ANSWER TO THE QUESTION WHY THERE IS NO SHOOTIN DOWN:
+    -because I were't able to find good spritesheets :D
+"""
+
+def fire(player, zombies):
+    if player.facing == RIGHT:
+        zombies = [z for z in zombies if z.x > player.x]
+        zombies.sort(key= lambda z: z.x)
+        for z in zombies:
+            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
+                z.health -= player.power
+                if z.health <= 0:
+                    z.is_alive = False
+                    player.score += 5
+                return
+
+    elif player.facing == LEFT:
+        zombies = [z for z in zombies if z.x < player.x]
+        zombies.sort(key= lambda z: z.x, reverse = True)
+        for z in zombies:
+            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
+                z.health -= player.power
+                if z.health <= 0:
+                    z.is_alive = False
+                    player.score += 5
+                return
+
+"""
+When the player is dead, all the zombies disappear, so we can enjoy the dying animation.
+After that the player can either press SPACE and go and save his score if it is between top 5
+or press ECS to go back to the Main Menu.
+"""
+def gameOver(player):
+    font = pygame.font.Font(None, 40)
+    font1 = pygame.font.Font(None, 30)
+    text = font.render("Game Over", True, (0, 0, 0))
+    text1 = font1.render("score: " + str(player.score), True, (0, 0, 0))
+    text2 = font1.render("press space to continue or esc to go back to menu", True, (0, 0, 0))
+    text_rect = text.get_rect()
+    text_x = DISPLAYSURF.get_width() / 2 - text_rect.width / 2
+    text_y = DISPLAYSURF.get_height() / 2 - text_rect.height / 2
+
+    while 1:
+        DISPLAYSURF.blit(text, [text_x, text_y])
+        DISPLAYSURF.blit(text1, [text_x, text_y + 50])
+        DISPLAYSURF.blit(text2, [text_x, text_y + 100])
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    write_score(player.score)
+                    main()
+                elif event.key == K_ESCAPE:
+                    main()
+
+        pygame.display.update()
+
+
+"""
+This function gets the scores from the txt file I use for storing them.
+"""
 def get_scores():
     f = open('high-scores')
     lines = f.readlines()
@@ -170,7 +245,9 @@ def get_scores():
     print(lines)
     return lines
 
-
+"""
+This function is editing the high scores file.
+"""
 def write_score(new_score):
     input_score = get_scores()
     if '\n' in input_score:
@@ -188,12 +265,19 @@ def write_score(new_score):
     players.sort(key=lambda k:k['score'], reverse=True)
     print(players)
 
+    flag = 0
     for i, p in enumerate(players):
         if new_score > int(p['score']):
             name = get_name()
             d = {'name': name, 'score': new_score}
             players.insert(i, d)
+            flag = 1
             break
+
+    if flag == 0:
+        name = get_name()
+        d = {'name': name, 'score': new_score}
+        players.append(d)
 
     with open('high-scores', 'w') as f:
         i = 0
@@ -205,6 +289,10 @@ def write_score(new_score):
                 break
 
 
+"""
+This function gets the user input name after he was killed and he chose to save his score.
+This function uses the classes from usrinput.py file, which also aren't mine.
+"""
 def get_name():
 
     screen = pygame.display.set_mode((1024, 768))
@@ -216,9 +304,8 @@ def get_name():
         clock.tick(FPS)
 
         events = pygame.event.get()
-        # process other events
+
         for event in events:
-            # close it x button si pressed
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
@@ -282,55 +369,6 @@ def show_scores():
                     return
 
         pygame.display.update()
-
-
-def show_menu(menu):
-
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT or event.key == K_a:
-                menu.selectItem(menu.selectedItemNumber + 1)
-            if event.key == pygame.K_RIGHT or event.key == K_d:
-                menu.selectItem(menu.selectedItemNumber - 1)
-            if event.key == pygame.K_KP_ENTER or event.key == K_SPACE:
-                if menu.selectedItemNumber == 2:
-                    pygame.quit()
-                    sys.exit()
-                if menu.selectedItemNumber == 1:
-                    show_scores()
-                elif menu.selectedItemNumber == 0:
-                    start_game()
-
-    menu.update()
-
-    #Draw stuff
-    DISPLAYSURF.fill((0,0,0))
-    menu.draw(DISPLAYSURF)
-    pygame.display.flip()
-
-def main():
-
-    global FPSCLOCK, DISPLAYSURF
-
-    pygame.init()
-    FPSCLOCK = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption('The Last Stand')
-
-
-    menu = RotatingMenu(x=320, y=240, radius=220, arc=pi, defaultAngle=pi/2.0)
-    menu.addItem(MenuItem("New Game"))
-    menu.addItem(MenuItem("High Scores"))
-    menu.addItem(MenuItem("Exit"))
-    menu.selectItem(0)
-
-    while True:
-        show_menu(menu)
-
 
 if __name__ == '__main__':
     main()
