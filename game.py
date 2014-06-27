@@ -56,7 +56,10 @@ def gameOver(player):
         DISPLAYSURF.blit(text2, [text_x, text_y + 100])
 
         for event in pygame.event.get():
-            if event.type == KEYDOWN:
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     write_score(player.score)
                     main()
@@ -222,7 +225,7 @@ def get_name():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return
-                elif event.key == K_KP_ENTER:
+                elif event.key == K_KP_ENTER or event.key == K_SPACE:
                     return txtbox.value
 
         screen.fill((255,255,255))
