@@ -94,5 +94,5 @@ class Hero:
 
             if self.animation_position_dead == self.animation_dead_max:
                 pass
-            else:
+            elif self.animation_position_dead < self.animation_dead_max:
                 self.animation_position_dead += 1
