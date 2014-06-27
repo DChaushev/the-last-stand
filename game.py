@@ -45,7 +45,7 @@ def gameOver(player):
     font1 = pygame.font.Font(None, 30)
     text = font.render("Game Over", True, (0, 0, 0))
     text1 = font1.render("score: " + str(player.score), True, (0, 0, 0))
-    text2 = font1.render("press space to continue", True, (0, 0, 0))
+    text2 = font1.render("press space to continue or esc to go back to menu", True, (0, 0, 0))
     text_rect = text.get_rect()
     text_x = DISPLAYSURF.get_width() / 2 - text_rect.width / 2
     text_y = DISPLAYSURF.get_height() / 2 - text_rect.height / 2
@@ -59,6 +59,8 @@ def gameOver(player):
             if event.type == KEYDOWN:
                 if event.key == K_SPACE:
                     write_score(player.score)
+                    main()
+                elif event.key == K_ESCAPE:
                     main()
 
         pygame.display.update()
@@ -149,8 +151,8 @@ def start_game():
         player.update()
 
         for z in zombies:
-            dead = z.update(player.x, player.y)
-            #, player.surface.get_width(), player.surface.get_height()
+            dead = z.update(player.x, player.y, player.surface.get_width(), player.surface.get_height())
+
             if dead:
                 player.is_alive = False
 
@@ -287,11 +289,11 @@ def show_menu(menu):
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT or event.key == K_a:
                 menu.selectItem(menu.selectedItemNumber + 1)
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == K_d:
                 menu.selectItem(menu.selectedItemNumber - 1)
-            if event.key == pygame.K_KP_ENTER:
+            if event.key == pygame.K_KP_ENTER or event.key == K_SPACE:
                 if menu.selectedItemNumber == 2:
                     pygame.quit()
                     sys.exit()

@@ -48,21 +48,21 @@ class Hero:
 
     def update(self):
         if self.is_alive:
-            if self.move_left:
+            if self.move_left and self.x > 0:
                 self.x -= self.speed
                 self.facing = LEFT
                 self.surface = L_ANIMATION_RUN[self.animation_position_run]
-            if self.move_right:
+            if self.move_right and self.x + self.surface.get_width() < WINDOW_WIDTH:
                 self.x += self.speed
                 self.facing = RIGHT
                 self.surface = R_ANIMATION_RUN[self.animation_position_run]
-            if self.move_down:
+            if self.move_down and self.y < WINDOW_HEIGHT - self.surface.get_height():
                 self.y += self.speed
                 if self.facing == LEFT:
                    self.surface = L_ANIMATION_RUN[self.animation_position_run]
                 elif self.facing == RIGHT:
                     self.surface = R_ANIMATION_RUN[self.animation_position_run]
-            if self.move_up:
+            if self.move_up and self.y > 0:
                 self.y -= self.speed
                 if self.facing == LEFT:
                    self.surface = L_ANIMATION_RUN[self.animation_position_run]

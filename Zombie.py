@@ -48,15 +48,19 @@ class Zombie:
         self.surface = R_ANIMATION_RUN[self.animation_position_run]
         self.speed = 1
 
-    def update(self, x, y):
+    def update(self, x, y, player_width, player_height):
+
+        zombie_width = self.surface.get_width()
+        zombie_height = self.surface.get_height()
+
         if self.is_alive:
-            if self.x < x:
+            if self.x + int(zombie_width/2) < x + int(player_width/2):
                 self.x += self.speed
                 self.surface = R_ANIMATION_RUN[self.animation_position_run]
             else:
                 self.x -= self.speed
                 self.surface = L_ANIMATION_RUN[self.animation_position_run]
-            if self.y < y:
+            if self.y + int(zombie_height/2) < y + int(player_height/2):
                 self.y += self.speed
             else:
                 self.y -= self.speed
@@ -67,7 +71,7 @@ class Zombie:
                 self.animation_position_run += 1
 
         else:
-            if self.x < x:
+            if self.x < x + int(player_width/2):
                 self.surface = R_ANIMATION_DEAD[self.animation_dead_position]
             else:
                 self.surface = L_ANIMATION_DEAD[self.animation_dead_position]
@@ -78,7 +82,7 @@ class Zombie:
                 self.animation_dead_position += 1
 
 
-        if self.x == x and self.y == y:
+        if self.x + int(zombie_width/2) > x and self.x + int(zombie_width/2) < x + player_width and self.y + int(zombie_height/2) > y and self.y + int(zombie_height/2) < y + player_height:
             return 1
 
         return 0
