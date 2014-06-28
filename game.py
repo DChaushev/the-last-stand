@@ -229,7 +229,7 @@ def write_score(new_score):
         splitted = s.split(' ')
         d = {'name': splitted[0], 'score': splitted[1]}
         players.append(d)
-    players.sort(key=lambda k:k['score'], reverse=True)
+    players.sort(key=lambda k:int(k['score']), reverse=True)
     print(players)
 
     flag = 0
