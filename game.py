@@ -12,7 +12,7 @@ from Zombie import *
 from menu import *
 
 FPS = 30
-TERRAINCOLOR = (10, 127, 2)
+TERRAINCOLOR = (25, 88, 6)
 
 """ In the main function we have only the menu """
 def main():
@@ -176,17 +176,17 @@ or press ECS to go back to the Main Menu.
 def gameOver(player):
     font = pygame.font.Font(None, 40)
     font1 = pygame.font.Font(None, 30)
-    text = font.render("Game Over", True, (0, 0, 0))
-    text1 = font1.render("score: " + str(player.score), True, (0, 0, 0))
-    text2 = font1.render("press space to continue or esc to go back to menu", True, (0, 0, 0))
+    text = font.render("Game Over", True, (255, 255, 255))
+    text1 = font1.render("score: " + str(player.score), True, (255, 255, 255))
+    text2 = font1.render("press space to continue or esc to go back to menu", True, (255, 255, 255))
     text_rect = text.get_rect()
     text_x = DISPLAYSURF.get_width() / 2 - text_rect.width / 2
     text_y = DISPLAYSURF.get_height() / 2 - text_rect.height / 2
 
     while 1:
         DISPLAYSURF.blit(text, [text_x, text_y])
-        DISPLAYSURF.blit(text1, [text_x, text_y + 50])
-        DISPLAYSURF.blit(text2, [text_x, text_y + 100])
+        DISPLAYSURF.blit(text1, [text_x + 30, text_y + 50])
+        DISPLAYSURF.blit(text2, [text_x - 150, text_y + 100])
 
         for event in pygame.event.get():
             if event.type == QUIT:

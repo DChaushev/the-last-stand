@@ -110,8 +110,8 @@ class MenuItem:
         self.y = 0 #The menu will edit these
 
 
-        self.logo = pygame.image.load('zombie sprite/zombie-logo.png')
-        #self.logo = pygame.image.load('soldier sprite/player_logo.png')
+        #self.logo = pygame.image.load('zombie sprite/zombie-logo.png')
+        self.logo = pygame.image.load('soldier sprite/player_logo.png')
 
 
         self.font = pygame.font.Font(None, 20)
@@ -138,5 +138,5 @@ class MenuItem:
         self.yOffset = size[1] / 2
     
     def draw(self, display):
-        display.blit(self.logo, (350, 200))
+        display.blit(self.logo, (350, 225))
         display.blit(self.image, (self.x + 150, self.y + 150))
