@@ -43,7 +43,7 @@ class Hero:
         self.move_right = False
         self.move_up = False
         self.move_down = False
-        self.fire = False
+        self.shooting = False
         self.score = 0
 
     def update(self):
@@ -69,7 +69,7 @@ class Hero:
                 elif self.facing == RIGHT:
                     self.surface = R_ANIMATION_RUN[self.animation_position_run]
 
-            if self.fire:
+            if self.shooting:
                 if self.facing == LEFT:
                     self.surface = pygame.image.load('soldier sprite/shoot_left.png')
                 elif self.facing == RIGHT:
@@ -96,3 +96,36 @@ class Hero:
                 pass
             elif self.animation_position_dead < self.animation_dead_max:
                 self.animation_position_dead += 1
+
+
+    """
+    I am very proud of this function.
+    When the player fires, depending on the side he is facing, we check only for hit on that side.
+    The zombies are sorted by the distance to the player and we are always hitting the closest one.
+
+    ANSWER TO THE QUESTION WHY THERE IS NO SHOOTIN DOWN:
+        -because I were't able to find good spritesheets :D
+    """
+
+    def fire(self, zombies):
+        if self.facing == RIGHT:
+            zombies = [z for z in zombies if z.x > self.x]
+            zombies.sort(key= lambda z: z.x)
+            for z in zombies:
+                if self.y + 21 >= z.y and self.y + 21 <= z.y + z.surface.get_height():
+                    z.health -= self.power
+                    if z.health <= 0:
+                        z.is_alive = False
+                        self.score += 5
+                    return
+
+        elif self.facing == LEFT:
+            zombies = [z for z in zombies if z.x < self.x]
+            zombies.sort(key= lambda z: z.x, reverse = True)
+            for z in zombies:
+                if self.y + 21 >= z.y and self.y + 21 <= z.y + z.surface.get_height():
+                    z.health -= self.power
+                    if z.health <= 0:
+                        z.is_alive = False
+                        self.score += 5
+                    return

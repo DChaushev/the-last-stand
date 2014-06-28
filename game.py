@@ -141,8 +141,8 @@ def start_game():
                     player.move_left = False
                     player.move_right = True
                 elif event.key == K_SPACE:
-                    player.fire = True
-                    fire(player, zombies)
+                    player.shooting = True
+                    player.fire(zombies)
                 elif event.key == K_ESCAPE:
                     return
             elif event.type == KEYUP:
@@ -155,7 +155,7 @@ def start_game():
                 elif event.key in (K_LEFT, K_a):
                     player.move_left = False
                 elif event.key == K_SPACE:
-                    player.fire = False
+                    player.shooting = False
 
         player.update()
 
@@ -167,39 +167,6 @@ def start_game():
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
-
-
-"""
-I am very proud of this function.
-When the player fires, depending on the side he is facing, we check only for hit on that side.
-The zombies are sorted by the distance to the player and we are always hitting the closest one.
-
-ANSWER TO THE QUESTION WHY THERE IS NO SHOOTIN DOWN:
-    -because I were't able to find good spritesheets :D
-"""
-
-def fire(player, zombies):
-    if player.facing == RIGHT:
-        zombies = [z for z in zombies if z.x > player.x]
-        zombies.sort(key= lambda z: z.x)
-        for z in zombies:
-            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
-                z.health -= player.power
-                if z.health <= 0:
-                    z.is_alive = False
-                    player.score += 5
-                return
-
-    elif player.facing == LEFT:
-        zombies = [z for z in zombies if z.x < player.x]
-        zombies.sort(key= lambda z: z.x, reverse = True)
-        for z in zombies:
-            if player.y + 21 >= z.y and player.y + 21 <= z.y + z.surface.get_height():
-                z.health -= player.power
-                if z.health <= 0:
-                    z.is_alive = False
-                    player.score += 5
-                return
 
 """
 When the player is dead, all the zombies disappear, so we can enjoy the dying animation.
