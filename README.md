@@ -1,20 +1,15 @@
 the-last-stand
 ==============
 
-Game that I'm making as a project for a Python course.
+Game that I made as a project for a Python course at the university.
 ==============
 
-Играта представява 2D stand-alone shooter.
-Ще е с графичен интерфейс.
+Behold the game, where the start menu is better than the game!
 
-В процеса на разработка може да се промени, но в момента си го
-представям така:
+2D standalone shooter, where you have to kill zombies and stay alive as long as possible.
+Zombies multiply and keep comming!
 
-- Играчът го пуска по средата на екрана с някакво огнестрелно оръжие.
-- Може да се ходи навсякъде по видимата част на картата.
-- Отдвсякъде започват да прииждат зомбита. Като колкото по-напред сме в играта, толкова повече стават те.
-- На база време и убити зомбита се трупат точки.
-- Запазване на Top 5.
-- Целта на играта е да се оцелее възможно най-дълго.
+To be able to play you need to have Python 3.3* + the relevant Pygame version.
+I wrote it in Python 3.3.5.
 
 Have fun! :)
